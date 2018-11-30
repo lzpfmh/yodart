@@ -6,7 +6,10 @@ var childProcess = require('child_process')
 var path = require('path')
 var logger = require('logger')('ext-app')
 var _ = require('@yoda/util')._
-var ActivityDescriptor = require('./activity-descriptor').ActivityDescriptor
+
+var kAppModesTest = require('../../constants.json').AppScheduler.modes.test
+var ActivityDescriptor = require('../descriptor/activity-descriptor')
+var ActivityTestDescriptor = require('../descriptor/activity-test-descriptor')
 
 var entry = path.join(__dirname, '..', '..', 'client', 'ext-app-entry.js')
 
@@ -18,11 +21,14 @@ module.exports = createExtApp
  * @param {string} target - app home directory
  * @param {AppRuntime} runtime -
  */
-function createExtApp (appId, metadata, runtime) {
+function createExtApp (appId, metadata, runtime, mode) {
   var target = _.get(metadata, 'appHome')
   var descriptor = new ActivityDescriptor(appId, target, runtime)
+  if (mode === kAppModesTest) {
+    descriptor.test = new ActivityTestDescriptor(descriptor, appId, target, runtime)
+  }
 
-  var cp = childProcess.fork(entry, [ target ], {
+  var cp = childProcess.fork(entry, [ target, mode ], {
     cwd: target,
     env: Object.assign({}, process.env),
     stdio: 'inherit'
