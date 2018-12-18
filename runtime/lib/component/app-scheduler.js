@@ -2,7 +2,7 @@
 var logger = require('logger')('scheduler')
 var _ = require('@yoda/util')._
 
-var Constants = require('../../constants.json').AppScheduler
+var Constants = require('../../constants').AppScheduler
 var lightApp = require('../app/light-app')
 var extApp = require('../app/ext-app')
 var DbusApp = require('../app/dbus-app')

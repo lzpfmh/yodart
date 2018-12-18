@@ -7,11 +7,12 @@ var path = require('path')
 var logger = require('logger')('ext-app')
 var _ = require('@yoda/util')._
 
-var kAppModesTest = require('../../constants.json').AppScheduler.modes.test
+var kAppModesTest = require('../../constants').AppScheduler.modes.test
 var ActivityDescriptor = require('../descriptor/activity-descriptor')
 var ActivityTestDescriptor = require('../descriptor/activity-test-descriptor')
 
-var entry = path.join(__dirname, '..', '..', 'client', 'ext-app-entry.js')
+var defaultEntry = path.join(__dirname, '..', '..', 'client', 'ext-app-entry.js')
+var testEntry = path.join(__dirname, '..', '..', 'client', 'ext-test-entry.js')
 
 module.exports = createExtApp
 /**
@@ -23,8 +24,10 @@ module.exports = createExtApp
  */
 function createExtApp (appId, metadata, runtime, mode) {
   var target = _.get(metadata, 'appHome')
+  var entry = defaultEntry
   var descriptor = new ActivityDescriptor(appId, target, runtime)
-  if (mode === kAppModesTest) {
+  if (mode & kAppModesTest) {
+    entry = testEntry
     descriptor.test = new ActivityTestDescriptor(descriptor, appId, target, runtime)
   }
 
